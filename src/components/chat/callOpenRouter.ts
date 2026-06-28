@@ -1,3 +1,5 @@
+import { formatCurrency } from "../../utils";
+
 export async function callOpenRouter(
   userInput: string,
   balance: number,
@@ -18,9 +20,9 @@ Réponds uniquement en français.`;
 
     const userPrompt = `
 Voici mes données pour ${monthName} :
-- Revenus : ${totalIncomes.toLocaleString()} FCFA
-- Dépenses : ${totalExpenses.toLocaleString()} FCFA
-- Solde : ${balance.toLocaleString()} FCFA
+- Revenus : ${formatCurrency(totalIncomes)}
+- Dépenses : ${formatCurrency(totalExpenses)}
+- Solde : ${formatCurrency(balance)}
 
 ${userInput}`;
 

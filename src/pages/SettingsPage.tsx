@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Key, Save, Eye, EyeOff } from "lucide-react";
+import { Key, Save, Eye, EyeOff, Coins } from "lucide-react";
 import { toast } from "react-toastify";
 import { initializeGroqClient } from "../services/agent/groqClient";
+import { useCurrencyStore } from "../stores/currencyStore";
 
 const SettingsPage = () => {
+  const { currency, setCurrency } = useCurrencyStore();
   const [apiKey, setApiKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -109,6 +111,60 @@ const SettingsPage = () => {
                     <span>Sauvegarder</span>
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+
+          {/* Carte Préférences */}
+          <div className="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-[#3170dd] bg-opacity-10 rounded-full flex items-center justify-center">
+                <Coins className="w-5 h-5 text-[#3170dd]" />
+              </div>
+              <h2 className="text-xl font-semibold">Devise de l'application</h2>
+            </div>
+
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
+              Choisissez la devise préférée pour l'affichage de vos budgets, dépenses et rapports financiers.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrency("FCFA");
+                  toast.success("Devise configurée en Franc CFA (FCFA) !");
+                }}
+                className={`flex items-center justify-between p-4 rounded-lg border-2 text-left transition-all duration-300 ${
+                  currency === "FCFA"
+                    ? "border-[#3170dd] bg-[#3170dd]/5 dark:bg-[#3170dd]/10 scale-[1.02]"
+                    : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 bg-transparent"
+                }`}
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-bold text-lg text-neutral-800 dark:text-neutral-100">Franc CFA (FCFA)</span>
+                  <span className="text-xs text-neutral-500">Afrique de l'Ouest/Centrale (XOF/XAF)</span>
+                </div>
+                <span className={`text-2xl font-black ${currency === "FCFA" ? "text-[#3170dd]" : "text-neutral-400"}`}>FCFA</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrency("EUR");
+                  toast.success("Devise configurée en Euro (€) !");
+                }}
+                className={`flex items-center justify-between p-4 rounded-lg border-2 text-left transition-all duration-300 ${
+                  currency === "EUR"
+                    ? "border-[#3170dd] bg-[#3170dd]/5 dark:bg-[#3170dd]/10 scale-[1.02]"
+                    : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 bg-transparent"
+                }`}
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-bold text-lg text-neutral-800 dark:text-neutral-100">Euro (€)</span>
+                  <span className="text-xs text-neutral-500">Union Européenne (EUR)</span>
+                </div>
+                <span className={`text-3xl font-black ${currency === "EUR" ? "text-[#3170dd]" : "text-neutral-400"}`}>€</span>
               </button>
             </div>
           </div>

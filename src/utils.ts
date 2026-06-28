@@ -1,3 +1,5 @@
+import { useCurrencyStore } from "./stores/currencyStore";
+
 // ✅ Format d'affichage "30 juin 2025"
 export function formatDateDisplay(date: Date | string | number): string {
   const d = new Date(date);
@@ -37,6 +39,15 @@ export function capitalizeFirstLetter(str: string): string {
 
 // 💰 Currency formatting
 export function formatCurrency(amount: number): string {
+  const currency = useCurrencyStore.getState().currency;
+  if (currency === 'EUR') {
+    return amount.toLocaleString('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).replace(/\u00a0/g, ' ');
+  }
   // Remplacer les espaces insécables par des points (pour fr-FR toLocaleString)
   return `${amount.toLocaleString('fr-FR').replace(/\u00a0/g, '.')} FCFA`;
 }

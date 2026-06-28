@@ -7,6 +7,7 @@ import { useBudgetStore } from '../stores/budgetStore';
 import { useExpenseStore } from '../stores/expenseStore';
 import { useIncomeStore } from '../stores/incomeStore';
 import { useUserStore } from '../stores/userStore';
+import { formatCurrency } from '../utils';
 
 const CategoriesPage = () => {
   const navigate = useNavigate();
@@ -147,14 +148,14 @@ const CategoriesPage = () => {
                     <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-neutral-500 dark:text-neutral-500 mb-1">Dépensé</p>
-                        <p className="font-semibold">{spent.toLocaleString()} FCFA</p>
+                        <p className="font-semibold">{formatCurrency(spent)}</p>
                       </div>
                       {budget.type !== 'tracking' && (
                         <>
                           <div>
                             <p className="text-neutral-500 dark:text-neutral-500 mb-1">Budget</p>
                             <p className="font-semibold text-[#3170dd]">
-                              {(budget.amount || 0).toLocaleString()} FCFA
+                              {formatCurrency(budget.amount || 0)}
                             </p>
                           </div>
                           <div className="col-span-2 sm:col-auto">
@@ -162,7 +163,7 @@ const CategoriesPage = () => {
                             <p
                               className={`font-semibold ${(budget.amount || 0) - spent + added < 0 ? 'text-red-500' : 'text-emerald-500'}`}
                             >
-                              {((budget.amount || 0) - spent + added).toLocaleString()} FCFA
+                              {formatCurrency((budget.amount || 0) - spent + added)}
                             </p>
                           </div>
                         </>
@@ -171,7 +172,7 @@ const CategoriesPage = () => {
                         <div>
                           <p className="text-neutral-500 dark:text-neutral-500 mb-1">Revenus</p>
                           <p className="font-semibold text-emerald-500">
-                            {added.toLocaleString()} FCFA
+                            {formatCurrency(added)}
                           </p>
                         </div>
                       )}

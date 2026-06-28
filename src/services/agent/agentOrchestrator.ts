@@ -5,6 +5,7 @@ import { buildFinancialContext } from "./contextBuilder";
 import { getGroqClient } from "./groqClient";
 import { detectIntent } from "./intentDetector";
 import { processResponse } from "./responseProcessor";
+import { useCurrencyStore } from "../../stores/currencyStore";
 
 /**
  * Orchestre le traitement complet d'un message utilisateur
@@ -120,9 +121,11 @@ const callAI = async (
 ): Promise<{ content: string; tokensUsed?: number }> => {
   const groqClient = getGroqClient();
 
-  // Créer le message système avec le contexte
+  // Créer le message système avec le contexte et la devise active
+  const currency = useCurrencyStore.getState().currency;
+  const activeSystemPrompt = SYSTEM_PROMPT.replace(/FCFA/g, currency);
   const systemMessage = groqClient.createSystemMessage(
-    SYSTEM_PROMPT,
+    activeSystemPrompt,
     contextPrompt
   );
 

@@ -2,6 +2,7 @@ import { useBudgetStore } from '../../stores/budgetStore';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { useIncomeStore } from '../../stores/incomeStore';
 import { useNotificationStore } from '../../stores/notificationStore';
+import { formatCurrency } from '../../utils';
 
 export const checkExpenseTriggers = async (userId: string, budgetId: string) => {
   const { getBudgetById } = useBudgetStore.getState();
@@ -47,7 +48,7 @@ export const checkExpenseTriggers = async (userId: string, budgetId: string) => 
     if (spent > total) {
       const dépassement = spent - total;
       await addNotifications(userId, {
-        message: `🚨 Le budget ${budget.name} a été dépassé de ${dépassement.toLocaleString()} FCFA.`,
+        message: `🚨 Le budget ${budget.name} a été dépassé de ${formatCurrency(dépassement)}.`,
         type: 'alert',
         date: new Date().toISOString(),
         read: false,
@@ -65,7 +66,7 @@ export const checkExpenseTriggers = async (userId: string, budgetId: string) => 
     // Alerte si un retrait fait passer sous 50% de l'objectif
     if (netSaved >= 0 && percentage < 50 && spent > 0) {
       await addNotifications(userId, {
-        message: `⚠️ Retrait sur "${budget.name}" : il ne reste que ${netSaved.toLocaleString()} FCFA épargnés (${Math.round(percentage)}% de l'objectif).`,
+        message: `⚠️ Retrait sur "${budget.name}" : il ne reste que ${formatCurrency(netSaved)} épargnés (${Math.round(percentage)}% de l'objectif).`,
         type: 'alert',
         date: new Date().toISOString(),
         read: false,
@@ -75,7 +76,7 @@ export const checkExpenseTriggers = async (userId: string, budgetId: string) => 
     // Alerte si l'objectif est atteint
     if (netSaved >= goal) {
       await addNotifications(userId, {
-        message: `🎉 Objectif d'épargne "${budget.name}" atteint ! ${netSaved.toLocaleString()} FCFA épargnés sur ${goal.toLocaleString()} FCFA.`,
+        message: `🎉 Objectif d'épargne "${budget.name}" atteint ! ${formatCurrency(netSaved)} épargnés sur ${formatCurrency(goal)}.`,
         type: 'income',
         date: new Date().toISOString(),
         read: false,
@@ -129,7 +130,7 @@ export const checkExpenseTriggers = async (userId: string, budgetId: string) => 
   // Notification commune : dépense élevée (tous types)
   if (spent > 50000) {
     await addNotifications(userId, {
-      message: `💰 Dépense élevée : ${spent.toLocaleString()} FCFA pour ${budget.name}.`,
+      message: `💰 Dépense élevée : ${formatCurrency(spent)} pour ${budget.name}.`,
       type: 'expense',
       date: new Date().toISOString(),
       read: false,

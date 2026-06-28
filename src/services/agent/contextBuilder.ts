@@ -2,6 +2,7 @@ import type { FinancialContext, BudgetSummary, ExpenseSummary, IncomeSummary, Hi
 import { useBudgetStore } from '../../stores/budgetStore';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { useIncomeStore } from '../../stores/incomeStore';
+import { formatCurrency } from '../../utils';
 
 /**
  * Construit le contexte financier complet pour l'agent IA
@@ -281,7 +282,7 @@ const buildTrendAnalysis = (currentExpenses: ExpenseSummary, historical: Histori
     byCategory[cat] = {
       direction: 'stable' as const,
       percentage: 0,
-      comparison: `${current.toLocaleString()} FCFA ce mois`
+      comparison: `${formatCurrency(current)} ce mois`
     };
   });
 
@@ -304,7 +305,7 @@ const buildAlerts = (budgets: BudgetSummary[], expenses: ExpenseSummary, dayOfMo
       alerts.push({
         type: 'danger',
         category: budget.name,
-        message: `Budget "${budget.name}" dépassé : ${budget.spent.toLocaleString()} FCFA dépensés sur ${budget.amount?.toLocaleString()} FCFA`,
+        message: `Budget "${budget.name}" dépassé : ${formatCurrency(budget.spent)} dépensés sur ${formatCurrency(budget.amount || 0)}`,
         value: budget.spent,
         threshold: budget.amount
       });

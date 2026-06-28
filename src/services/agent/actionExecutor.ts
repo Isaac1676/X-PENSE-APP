@@ -3,6 +3,7 @@ import { ActionType } from '../../types/agent';
 import { useBudgetStore } from '../../stores/budgetStore';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { useIncomeStore } from '../../stores/incomeStore';
+import { formatCurrency } from '../../utils';
 
 /**
  * Exécute une action détectée par l'agent
@@ -141,7 +142,7 @@ const addExpense = async (params: Record<string, any>, userId: string): Promise<
     await expenseStore.addExpense(userId, expenseData);
     return {
       success: true,
-      message: `✅ Dépense "${name}" de ${amount} FCFA ajoutée !`,
+      message: `✅ Dépense "${name}" de ${formatCurrency(parseFloat(amount))} ajoutée !`,
       data: expenseData
     };
   } catch (error: any) {
@@ -195,7 +196,7 @@ const addIncome = async (params: Record<string, any>, userId: string): Promise<A
     await incomeStore.addIncome(userId, incomeData);
     return {
       success: true,
-      message: `✅ Revenu "${name}" de ${amount} FCFA ajouté !`,
+      message: `✅ Revenu "${name}" de ${formatCurrency(parseFloat(amount))} ajouté !`,
       data: incomeData
     };
   } catch (error: any) {

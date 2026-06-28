@@ -79,7 +79,7 @@ export const checkMonthlyTriggers = async (
       month: 'long',
     });
 
-    const finalSummary = `Résumé final de ${prevMonthName} : ${prevTotalExpenses.toLocaleString()} FCFA de dépenses, ${prevTotalIncomes.toLocaleString()} FCFA de revenus.`;
+    const finalSummary = `Résumé final de ${prevMonthName} : ${formatCurrency(prevTotalExpenses)} de dépenses, ${formatCurrency(prevTotalIncomes)} de revenus.`;
 
     await addNotifications(userId, {
       message: finalSummary,
@@ -159,7 +159,7 @@ export const checkMonthlyTriggers = async (
                 ? '📉 en baisse'
                 : '➡️ stable';
           await addNotifications(userId, {
-            message: `📝 Suivi ${prevMonthName} • ${budget.name} : ${trend.currentMonth.toLocaleString()} FCFA (${trendText})`,
+            message: `📝 Suivi ${prevMonthName} • ${budget.name} : ${formatCurrency(trend.currentMonth)} (${trendText})`,
             type: 'expense',
             date: now.toISOString(),
             read: false,

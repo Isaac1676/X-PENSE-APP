@@ -2,6 +2,7 @@ import { type BudgetInterface } from '../../stores/budgetStore';
 import { type ExpenseInterface } from '../../stores/expenseStore';
 import { type IncomeInterface } from '../../stores/incomeStore';
 import { useNotificationStore } from '../../stores/notificationStore';
+import { formatCurrency } from '../../utils';
 
 /**
  * Checks if a savings budget has reached key milestones (50%, 100%)
@@ -46,7 +47,7 @@ export const checkSavingsMilestones = async (
     // To avoid spam, we can check if the LAST transaction made it cross the line.
     // But since we are calling this RIGHT AFTER adding an income, it's likely relevant.
     await addNotifications(userId, {
-      message: `Félicitations ! Vous avez atteint votre objectif d'épargne pour "${budget.name}" (${currentSaved.toLocaleString()} FCFA).`,
+      message: `Félicitations ! Vous avez atteint votre objectif d'épargne pour "${budget.name}" (${formatCurrency(currentSaved)}).`,
       type: 'income',
       date: new Date().toISOString(),
       read: false,

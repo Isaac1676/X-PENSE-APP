@@ -4,9 +4,11 @@ import ReactMarkdown from "react-markdown";
 import MessageInput from "../components/chat/MessageInput";
 import { useChatStore } from "../stores/chatStore";
 import { useUserStore } from "../stores/userStore";
+import { useCurrencyStore } from "../stores/currencyStore";
 
 const ChatBotPage = () => {
   const { user } = useUserStore();
+  const { currency } = useCurrencyStore();
   const {
     messages,
     getAllChats,
@@ -91,12 +93,16 @@ const ChatBotPage = () => {
                   </button>
                   <button
                     onClick={() =>
-                      handleSuggestion("Comment économiser 200 FCFA ?")
+                      handleSuggestion(
+                        currency === "EUR"
+                          ? "Comment économiser 200 € ?"
+                          : "Comment économiser 200 FCFA ?"
+                      )
                     }
                     disabled={isLoading}
                     className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Comment économiser 200 FCFA ?
+                    Comment économiser {currency === "EUR" ? "200 €" : "200 FCFA"} ?
                   </button>
                 </div>
               </div>

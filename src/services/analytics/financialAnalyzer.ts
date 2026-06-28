@@ -2,6 +2,7 @@ import { useBudgetStore } from '../../stores/budgetStore';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { useIncomeStore } from '../../stores/incomeStore';
 import type { Opportunity, Pattern, Prediction, TrendAnalysis } from '../../types/agent';
+import { formatCurrency } from '../../utils';
 
 /**
  * Calcule les tendances de dépenses sur plusieurs mois
@@ -109,7 +110,7 @@ export const calculateTrends = (months: number = 3): TrendAnalysis => {
     byCategory[budget.name] = {
       direction,
       percentage: catPercentage,
-      comparison: `${currentCategoryTotal.toLocaleString()} FCFA ce mois vs ${Math.round(avgPreviousCat).toLocaleString()} FCFA en moyenne`,
+      comparison: `${formatCurrency(currentCategoryTotal)} ce mois vs ${formatCurrency(Math.round(avgPreviousCat))} en moyenne`,
     };
   });
 
@@ -154,7 +155,7 @@ export const detectSpendingPatterns = (): Pattern[] => {
         patterns.push({
           type: 'recurring',
           category: budget?.name || 'Autre',
-          description: `Dépense récurrente "${name}" d'environ ${Math.round(avgAmount).toLocaleString()} FCFA`,
+          description: `Dépense récurrente "${name}" d'environ ${formatCurrency(Math.round(avgAmount))}`,
           frequency: `${exps.length} fois`,
           amount: avgAmount,
         });
@@ -186,7 +187,7 @@ export const detectSpendingPatterns = (): Pattern[] => {
         patterns.push({
           type: 'spike',
           category: budget.name,
-          description: `Dépense inhabituelle "${spike.name}" de ${spike.amount.toLocaleString()} FCFA (moyenne: ${Math.round(avgAmount).toLocaleString()} FCFA)`,
+          description: `Dépense inhabituelle "${spike.name}" de ${formatCurrency(spike.amount)} (moyenne: ${formatCurrency(Math.round(avgAmount))})`,
           amount: spike.amount,
         });
       }
@@ -246,7 +247,7 @@ export const identifySavingsOpportunities = (): Opportunity[] => {
         suggestedTarget,
         potentialSavings: avgSpending - suggestedTarget,
         confidence: 0.7,
-        reasoning: `Catégorie sans limite. En réduisant de 20%, vous économiseriez ${(avgSpending - suggestedTarget).toLocaleString()} FCFA/mois`,
+        reasoning: `Catégorie sans limite. En réduisant de 20%, vous économiseriez ${formatCurrency(avgSpending - suggestedTarget)}/mois`,
       });
     }
 
@@ -262,7 +263,7 @@ export const identifySavingsOpportunities = (): Opportunity[] => {
           suggestedTarget,
           potentialSavings: 0,
           confidence: 0.9,
-          reasoning: `Budget régulièrement dépassé (${exceedCount}/3 mois). Augmentez le plafond à ${suggestedTarget.toLocaleString()} FCFA ou réduisez vos dépenses`,
+          reasoning: `Budget régulièrement dépassé (${exceedCount}/3 mois). Augmentez le plafond à ${formatCurrency(suggestedTarget)} ou réduisez vos dépenses`,
         });
       }
     }
@@ -288,7 +289,7 @@ export const identifySavingsOpportunities = (): Opportunity[] => {
           suggestedTarget: monthlyNeeded,
           potentialSavings: goal - netSaved,
           confidence: 0.8,
-          reasoning: `Épargne "${budget.name}" à ${Math.round(progress)}% de l'objectif. Épargnez ${monthlyNeeded.toLocaleString()} FCFA/mois pour atteindre ${goal.toLocaleString()} FCFA d'ici 3 mois`,
+          reasoning: `Épargne "${budget.name}" à ${Math.round(progress)}% de l'objectif. Épargnez ${formatCurrency(monthlyNeeded)}/mois pour atteindre ${formatCurrency(goal)} d'ici 3 mois`,
         });
       }
     }

@@ -211,8 +211,8 @@ const extractParameters = (
       params.type = "income";
     }
 
-    // Extraire le montant (chercher un nombre suivi de FCFA)
-    const amountMatch = message.match(/(\d+(?:\s?\d+)*)\s*(?:fcfa)/i);
+    // Extraire le montant (chercher un nombre suivi de FCFA ou EUR/€)
+    const amountMatch = message.match(/(\d+(?:\s?\d+)*)\s*(?:fcfa|€|eur|euros?)/i);
     if (amountMatch) {
       params.amount = parseInt(amountMatch[1].replace(/\s/g, ""));
     }
@@ -235,8 +235,8 @@ const extractParameters = (
 
   // Pour les actions de modification
   if (intent === IntentTypeEnum.ACTION_MODIFY) {
-    // Extraire le montant
-    const amountMatch = message.match(/(\d+(?:\s?\d+)*)\s*(?:fcfa)/i);
+    // Extraire le montant (support FCFA, EUR, €)
+    const amountMatch = message.match(/(\d+(?:\s?\d+)*)\s*(?:fcfa|€|eur|euros?)/i);
     if (amountMatch) {
       params.newAmount = parseInt(amountMatch[1].replace(/\s/g, ""));
     }

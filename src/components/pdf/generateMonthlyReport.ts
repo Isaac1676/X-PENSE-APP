@@ -3,6 +3,7 @@ import autoTable, { type Styles } from 'jspdf-autotable';
 import logoImage from '../../assets/logo.png';
 import { type ExpenseInterface } from '../../stores/expenseStore';
 import { type IncomeInterface } from '../../stores/incomeStore';
+import { formatCurrency } from '../../utils';
 
 // Refined color palette - more sophisticated and cohesive
 const COLORS = {
@@ -37,10 +38,7 @@ const loadImage = async (src: string): Promise<string> => {
   }
 };
 
-// Format currency with dots
-const formatCurrency = (amount: number): string => {
-  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-};
+
 
 export const generateMonthlyReport = async (
   expenses: ExpenseInterface[],
@@ -222,7 +220,7 @@ export const generateMonthlyReport = async (
     doc.setFontSize(14);
     doc.setTextColor(card.color);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${formatCurrency(card.value)} FCFA`, cardX + 10, y + 20);
+    doc.text(formatCurrency(card.value), cardX + 10, y + 20);
   });
 
   y += cardHeight + 15;
@@ -242,7 +240,7 @@ export const generateMonthlyReport = async (
   if (Object.keys(expenseByCategory).length > 0) {
     const expenseData = Object.entries(expenseByCategory)
       .sort((a, b) => b[1] - a[1])
-      .map(([cat, val]) => [cat, `${formatCurrency(val)} FCFA`]);
+      .map(([cat, val]) => [cat, formatCurrency(val)]);
 
     autoTable(doc, {
       startY: y,
@@ -286,7 +284,7 @@ export const generateMonthlyReport = async (
   if (Object.keys(incomeByCategory).length > 0) {
     const incomeData = Object.entries(incomeByCategory)
       .sort((a, b) => b[1] - a[1])
-      .map(([cat, val]) => [cat, `${formatCurrency(val)} FCFA`]);
+      .map(([cat, val]) => [cat, formatCurrency(val)]);
 
     autoTable(doc, {
       startY: y,
