@@ -1,4 +1,5 @@
-import { Calendar, Tag, Trash } from 'lucide-react';
+import { Calendar, Tag, Trash, Pencil } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useBudgetStore } from '../../stores/budgetStore';
 import { useExpenseStore, type ExpenseInterface } from '../../stores/expenseStore';
@@ -6,6 +7,7 @@ import { useExpenseStore, type ExpenseInterface } from '../../stores/expenseStor
 import { useIncomeStore, type IncomeInterface } from '../../stores/incomeStore';
 import { useUserStore } from '../../stores/userStore';
 import { formatCurrency, formatDateDisplay } from '../../utils';
+import EditTransactionModal, { type TransactionType } from '../modals/EditTransactionModal';
 
 interface TableProps {
   expenses: ExpenseInterface[];
@@ -19,6 +21,8 @@ const Table = ({ expenses, incomes, showCategory = true, showActions = true }: T
   const { deleteIncome } = useIncomeStore();
   const { getBudgetById } = useBudgetStore();
   const { user } = useUserStore();
+
+  const [editingTransaction, setEditingTransaction] = useState<{ transaction: ExpenseInterface | IncomeInterface, type: TransactionType } | null>(null);
 
   const transactions = [
     ...expenses.map(e => ({ ...e, type: 'expense' }) as const),
@@ -87,13 +91,22 @@ const Table = ({ expenses, incomes, showCategory = true, showActions = true }: T
                   </div>
                 </div>
                 {showActions && (
-                  <button
-                    onClick={() => handleDelete(transaction.id, transaction.type)}
-                    className="p-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                    aria-label="Supprimer"
-                  >
-                    <Trash className="h-5 w-5" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setEditingTransaction({ transaction, type: transaction.type as TransactionType })}
+                      className="p-2 bg-blue-50 dark:bg-blue-900/20 text-[#3170dd] rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                      aria-label="Modifier"
+                    >
+                      <Pencil className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(transaction.id, transaction.type)}
+                      className="p-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                      aria-label="Supprimer"
+                    >
+                      <Trash className="h-5 w-5" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -166,13 +179,22 @@ const Table = ({ expenses, incomes, showCategory = true, showActions = true }: T
                   </td>
                   {showActions && (
                     <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => handleDelete(transaction.id, transaction.type)}
-                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                        aria-label="Supprimer"
-                      >
-                        <Trash className="h-5 w-5" />
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => setEditingTransaction({ transaction, type: transaction.type as TransactionType })}
+                          className="text-[#3170dd] hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                          aria-label="Modifier"
+                        >
+                          <Pencil className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(transaction.id, transaction.type)}
+                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                          aria-label="Supprimer"
+                        >
+                          <Trash className="h-5 w-5" />
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
@@ -181,6 +203,14 @@ const Table = ({ expenses, incomes, showCategory = true, showActions = true }: T
           </tbody>
         </table>
       </div>
+
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction.transaction}
+          type={editingTransaction.type}
+          onClose={() => setEditingTransaction(null)}
+        />
+      )}
     </div>
   );
 };

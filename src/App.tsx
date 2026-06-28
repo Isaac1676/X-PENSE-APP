@@ -24,6 +24,8 @@ const TransactionPage = lazy(() => import('./pages/TransactionPage'));
 const ChatBotPage = lazy(() => import('./pages/ChatBotPage'));
 const CategoriesPage = lazy(() => import('./pages/CategoriesPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+
 const App = () => {
   const { user, loading, initialized, initializeAuth } = useAuthStore();
   const { isDarkMode } = useThemeStore();
@@ -77,6 +79,10 @@ const App = () => {
                 path="/h/budgets/:budgetID"
                 element={user ? <BudgetPage /> : <Navigate to="/login" />}
               />
+              {/* <Route
+                path="/h/settings"
+                element={user ? <SettingsPage /> : <Navigate to="/login" />}
+              /> */}
               <Route
                 path="/h/dashboard"
                 element={user ? <DashboardPage /> : <Navigate to="/login" />}

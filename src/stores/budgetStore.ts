@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { addDoc, collection, db, deleteDoc, doc, getDocs } from '../firebase';
+import { addDoc, collection, db, deleteDoc, doc, getDocs, updateDoc } from '../firebase';
 
 export type BudgetType = 'capped' | 'tracking' | 'savings';
 
@@ -16,6 +16,7 @@ interface BudgetStore {
   addBudget: (userId: string, budget: Omit<BudgetInterface, 'id'>) => Promise<void>;
   getAllBudgets: (userId: string) => Promise<void>;
   deleteBudget: (userId: string, budgetId: string) => Promise<void>;
+  updateBudget: (userId: string, budgetId: string, budget: Partial<Omit<BudgetInterface, 'id' | 'createdAt'>>) => Promise<void>;
   deleteAllBudgets: (userId: string) => Promise<void>;
   getBudgetById: (budgetId: string | undefined) => BudgetInterface | null;
   verifyBudgetName: () => string[];
@@ -96,6 +97,35 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
       }));
     } catch (error) {
       console.error('Erreur lors de la suppression du budget:', error);
+      throw error;
+    }
+  },
+
+  updateBudget: async (userId, budgetId, updatedBudget) => {
+    try {
+      if (
+        (updatedBudget.type === 'capped' || updatedBudget.type === 'savings') &&
+        (updatedBudget.amount === undefined || updatedBudget.amount === null)
+      ) {
+        throw new Error("Le montant est obligatoire pour un budget plafonné ou d'épargne");
+      }
+
+      const docRef = doc(db, 'users', userId, 'budgets', budgetId);
+      
+      const budgetData: any = { ...updatedBudget };
+      if (budgetData.amount !== undefined && budgetData.amount !== null) {
+        budgetData.amount = Number(budgetData.amount);
+      }
+
+      await updateDoc(docRef, budgetData);
+
+      set(state => ({
+        budgets: state.budgets.map(budget =>
+          budget.id === budgetId ? { ...budget, ...budgetData } : budget
+        ),
+      }));
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du budget:', error);
       throw error;
     }
   },

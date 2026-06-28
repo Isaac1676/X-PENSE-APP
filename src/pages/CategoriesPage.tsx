@@ -1,13 +1,14 @@
-import { ArrowRight, ChevronLeft, Filter, Search, Trash2, X } from 'lucide-react';
+import { ArrowRight, ChevronLeft, Filter, Search, Trash2, X, Pencil } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Progressbar from '../components/progressBar/Progressbar';
-import type { BudgetType } from '../stores/budgetStore';
+import type { BudgetInterface, BudgetType } from '../stores/budgetStore';
 import { useBudgetStore } from '../stores/budgetStore';
 import { useExpenseStore } from '../stores/expenseStore';
 import { useIncomeStore } from '../stores/incomeStore';
 import { useUserStore } from '../stores/userStore';
 import { formatCurrency } from '../utils';
+import EditCategoryModal from '../components/modals/EditCategoryModal';
 
 const CategoriesPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const CategoriesPage = () => {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<BudgetType | 'all'>('all');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [editingBudget, setEditingBudget] = useState<BudgetInterface | null>(null);
 
   const handleDelete = async (e: React.MouseEvent, budgetId: string) => {
     e.stopPropagation();
@@ -201,16 +203,28 @@ const CategoriesPage = () => {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={e => {
-                          e.stopPropagation();
-                          setConfirmDeleteId(budget.id);
-                        }}
-                        className="p-2.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
-                        title="Supprimer la catégorie"
-                      >
-                        <Trash2 size={20} />
-                      </button>
+                      <div className="flex flex-col items-center gap-2">
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            setEditingBudget(budget);
+                          }}
+                          className="p-2.5 text-neutral-400 hover:text-[#3170dd] hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-all"
+                          title="Modifier la catégorie"
+                        >
+                          <Pencil size={20} />
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            setConfirmDeleteId(budget.id);
+                          }}
+                          className="p-2.5 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all"
+                          title="Supprimer la catégorie"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
                     )}
                     <div className="w-10 h-10 rounded-full bg-neutral-50 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                       <ArrowRight
@@ -239,6 +253,13 @@ const CategoriesPage = () => {
           </div>
         )}
       </div>
+
+      {editingBudget && (
+        <EditCategoryModal
+          budget={editingBudget}
+          onClose={() => setEditingBudget(null)}
+        />
+      )}
     </main>
   );
 };

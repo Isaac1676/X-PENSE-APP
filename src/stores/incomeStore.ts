@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { addDoc, collection, db, deleteDoc, doc, getDocs } from '../firebase';
+import { addDoc, collection, db, deleteDoc, doc, getDocs, updateDoc } from '../firebase';
 
 export interface IncomeInterface {
   id: string;
@@ -14,6 +14,7 @@ interface IncomeStore {
   addIncome: (userId: string, income: Omit<IncomeInterface, 'id'>) => Promise<void>;
   getAllIncomes: (userId: string) => Promise<void>;
   deleteIncome: (userId: string, incomeId: string) => Promise<void>;
+  updateIncome: (userId: string, incomeId: string, income: Partial<Omit<IncomeInterface, 'id'>>) => Promise<void>;
   deleteAllIncomes: (userId: string) => Promise<void>;
   deleteIncomesByBudget: (userId: string, budgetId: string) => Promise<void>;
   getIncomesByBudget: (budgetId: string | undefined) => IncomeInterface[];
@@ -58,7 +59,23 @@ export const useIncomeStore = create<IncomeStore>((set, get) => ({
         incomes: state.incomes.filter(income => income.id !== incomeId),
       }));
     } catch (error) {
-      console.error('Erreur lors de la suppression de la dépense:', error);
+      console.error('Erreur lors de la suppression du revenu:', error);
+      throw error;
+    }
+  },
+
+  updateIncome: async (userId, incomeId, updatedIncome) => {
+    try {
+      const incomeRef = doc(db, 'users', userId, 'incomes', incomeId);
+      await updateDoc(incomeRef, updatedIncome);
+
+      set(state => ({
+        incomes: state.incomes.map(income =>
+          income.id === incomeId ? { ...income, ...updatedIncome } : income
+        ),
+      }));
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du revenu:', error);
       throw error;
     }
   },

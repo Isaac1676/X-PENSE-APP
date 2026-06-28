@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { addDoc, collection, db, deleteDoc, doc, getDocs } from '../firebase';
+import { addDoc, collection, db, deleteDoc, doc, getDocs, updateDoc } from '../firebase';
 
 export interface ExpenseInterface {
   id: string;
@@ -14,6 +14,7 @@ interface ExpenseStore {
   addExpense: (userId: string, expense: Omit<ExpenseInterface, 'id'>) => Promise<void>;
   getAllExpenses: (userId: string) => Promise<void>;
   deleteExpense: (userId: string, expenseId: string) => Promise<void>;
+  updateExpense: (userId: string, expenseId: string, expense: Partial<Omit<ExpenseInterface, 'id'>>) => Promise<void>;
   deleteAllExpenses: (userId: string) => Promise<void>;
   deleteExpensesByBudget: (userId: string, budgetId: string) => Promise<void>;
   getExpensesByBudget: (budgetId: string | undefined) => ExpenseInterface[];
@@ -59,6 +60,22 @@ export const useExpenseStore = create<ExpenseStore>((set, get) => ({
       }));
     } catch (error) {
       console.error('Erreur lors de la suppression de la dépense:', error);
+      throw error;
+    }
+  },
+
+  updateExpense: async (userId, expenseId, updatedExpense) => {
+    try {
+      const expenseRef = doc(db, 'users', userId, 'expenses', expenseId);
+      await updateDoc(expenseRef, updatedExpense);
+
+      set(state => ({
+        expenses: state.expenses.map(expense =>
+          expense.id === expenseId ? { ...expense, ...updatedExpense } : expense
+        ),
+      }));
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la dépense:', error);
       throw error;
     }
   },

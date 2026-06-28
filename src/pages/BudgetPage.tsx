@@ -1,6 +1,8 @@
-import { ChevronLeft, Trash } from 'lucide-react';
+import { ChevronLeft, Trash, Edit } from 'lucide-react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify';
+import EditCategoryModal from '../components/modals/EditCategoryModal';
 import ExpenseForm from '../components/expenseForm/ExpenseForm';
 import IncomeForm from '../components/incomeForm/incomeForm';
 import Progressbar from '../components/progressBar/Progressbar';
@@ -13,6 +15,7 @@ import { useUserStore } from '../stores/userStore';
 import { formatCurrency } from '../utils';
 
 const BudgetPage = () => {
+  const [isEditing, setIsEditing] = useState(false);
   const { budgetID } = useParams();
   const { expenses, getExpenseBudget, deleteExpensesByBudget } = useExpenseStore();
   const { incomes, getIncomeBudget, deleteIncomesByBudget } = useIncomeStore();
@@ -128,13 +131,22 @@ const BudgetPage = () => {
                 <span className="text-red-600 dark:text-red-400 uppercase">Budget dépassé</span>
               )}
             </div>
-            <button
-              onClick={handleDelete}
-              className="mt-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
-            >
-              <Trash className="w-3.5 h-3.5" />
-              Supprimer
-            </button>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-[#3170dd] hover:text-white hover:bg-[#3170dd] border border-[#3170dd] rounded-lg text-xs font-bold transition-all"
+              >
+                <Edit className="w-3.5 h-3.5" />
+                Modifier
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
+              >
+                <Trash className="w-3.5 h-3.5" />
+                Supprimer
+              </button>
+            </div>
           </div>
         ) : budget.type === 'savings' ? (
           // BUDGET ÉPARGNE
@@ -196,13 +208,22 @@ const BudgetPage = () => {
               );
             })()}
 
-            <button
-              onClick={handleDelete}
-              className="mt-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
-            >
-              <Trash className="w-3.5 h-3.5" />
-              Supprimer
-            </button>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-[#3170dd] hover:text-white hover:bg-[#3170dd] border border-[#3170dd] rounded-lg text-xs font-bold transition-all"
+              >
+                <Edit className="w-3.5 h-3.5" />
+                Modifier
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
+              >
+                <Trash className="w-3.5 h-3.5" />
+                Supprimer
+              </button>
+            </div>
           </div>
         ) : (
           // CATÉGORIE DE SUIVI
@@ -233,13 +254,22 @@ const BudgetPage = () => {
               Cette catégorie sert uniquement à suivre vos flux sans limite.
             </div>
 
-            <button
-              onClick={handleDelete}
-              className="mt-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
-            >
-              <Trash className="w-3.5 h-3.5" />
-              Supprimer
-            </button>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-[#3170dd] hover:text-white hover:bg-[#3170dd] border border-[#3170dd] rounded-lg text-xs font-bold transition-all"
+              >
+                <Edit className="w-3.5 h-3.5" />
+                Modifier
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 flex items-center justify-center gap-2 px-3 cursor-pointer py-2 text-red-600 hover:text-white hover:bg-red-600 border border-red-600 rounded-lg text-xs font-bold transition-all"
+              >
+                <Trash className="w-3.5 h-3.5" />
+                Supprimer
+              </button>
+            </div>
           </div>
         )}
 
@@ -284,6 +314,13 @@ const BudgetPage = () => {
           )}
         </div>
       </div>
+
+      {isEditing && budget && (
+        <EditCategoryModal
+          budget={budget}
+          onClose={() => setIsEditing(false)}
+        />
+      )}
     </main>
   );
 };
