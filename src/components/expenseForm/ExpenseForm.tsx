@@ -37,7 +37,7 @@ const ExpenseForm = ({ budget }: { budget: BudgetInterface | null }) => {
         date: new Date().toISOString(),
       };
       await addExpense(user!.id, expense);
-      await checkExpenseTriggers(user!.id, expense.budget);
+      await checkExpenseTriggers(user!.id, expense.budget, expense.amount);
       toast.success('Dépense ajoutée avec succès !');
       // Réinitialiser le formulaire ou mettre à jour l'interface utilisateur si nécessaire
       setNewExpense({ name: '', amount: '', budgetId: '' });

@@ -9,6 +9,9 @@ import {
   getFirestore,
   updateDoc,
   setDoc,
+  query,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -33,16 +36,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { 
-  addDoc, 
-  collection, 
-  db, 
-  deleteDoc, 
-  doc, 
-  getDoc, 
-  getDocs, 
+export {
+  addDoc,
+  collection,
+  db,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
   updateDoc,
   setDoc,
+  query,
+  orderBy,
+  limit,
   auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

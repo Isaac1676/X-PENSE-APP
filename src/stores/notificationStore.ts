@@ -7,6 +7,9 @@ import {
   doc,
   getDocs,
   updateDoc,
+  query,
+  orderBy,
+  limit,
 } from "../firebase";
 
 export interface NotificationInterface {
@@ -70,9 +73,12 @@ export const useNotificationStore = create<NotificationStore>()((set, get) => ({
   },
   AllNotifications: async (userId) => {
     try {
-      const notificationSnapshots = await getDocs(
-        collection(db, "users", userId, "notifications")
+      const q = query(
+        collection(db, "users", userId, "notifications"),
+        orderBy("date", "desc"),
+        limit(50)
       );
+      const notificationSnapshots = await getDocs(q);
       const notifications = notificationSnapshots.docs.map((doc) => {
         const data = doc.data();
         return { id: doc.id, ...data } as NotificationInterface;

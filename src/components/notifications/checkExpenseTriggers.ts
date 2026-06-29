@@ -4,7 +4,7 @@ import { useIncomeStore } from '../../stores/incomeStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { formatCurrency } from '../../utils';
 
-export const checkExpenseTriggers = async (userId: string, budgetId: string) => {
+export const checkExpenseTriggers = async (userId: string, budgetId: string, currentExpenseAmount: number) => {
   const { getBudgetById } = useBudgetStore.getState();
   const { getExpenseBudget, expenses } = useExpenseStore.getState();
   const { getIncomeBudget } = useIncomeStore.getState();
@@ -128,9 +128,33 @@ export const checkExpenseTriggers = async (userId: string, budgetId: string) => 
   }
 
   // Notification commune : dépense élevée (tous types)
-  if (spent > 50000) {
+  let isHighExpense = false;
+
+  if (budget.type === 'capped' || budget.type === 'savings') {
+    // Si la dépense représente >= 50% du plafond
+    if (budget.amount && currentExpenseAmount >= budget.amount * 0.50) {
+      isHighExpense = true;
+    }
+  } else if (budget.type === 'tracking') {
+    const { incomes } = useIncomeStore.getState();
+    const currentMonthIncomes = incomes.filter(i => {
+      const d = new Date(i.date);
+      const now = new Date();
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const totalMonthIncome = currentMonthIncomes.reduce((sum, i) => sum + i.amount, 0);
+    
+    // Si revenu connu, > 20% du revenu. Sinon, fallback fixe à > 500.
+    if (totalMonthIncome > 0 && currentExpenseAmount >= totalMonthIncome * 0.20) {
+      isHighExpense = true;
+    } else if (totalMonthIncome === 0 && currentExpenseAmount > 500) {
+      isHighExpense = true;
+    }
+  }
+
+  if (isHighExpense) {
     await addNotifications(userId, {
-      message: `💰 Dépense élevée : ${formatCurrency(spent)} pour ${budget.name}.`,
+      message: `💰 Dépense importante de ${formatCurrency(currentExpenseAmount)} détectée pour ${budget.name}.`,
       type: 'expense',
       date: new Date().toISOString(),
       read: false,
